@@ -13,7 +13,8 @@ const MintFunction = () => {
         supply: 0,
         description: ""
     });
-    const [network , setNetwork] = useState("devnet");
+    const [network, setNetwork] = useState("devnet");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -23,13 +24,13 @@ const MintFunction = () => {
         }));
     };
 
-
     async function createMintTransaction() {
         if (!wallet.publicKey) {
             alert("Please connect your wallet!");
             throw new Error("Please Connect to your Wallet");
         }
 
+        setIsLoading(true);
         const mintKeypair = web3.Keypair.generate();
         const connection = new web3.Connection(web3.clusterApiUrl("devnet"), "confirmed");
 
@@ -61,16 +62,16 @@ const MintFunction = () => {
                 transaction.partialSign(mintKeypair);
                 const signedTransaction = await wallet.signTransaction(transaction);
                 const txHash = await connection.sendRawTransaction(signedTransaction.serialize());
-                alert(`Token Minted Successfully! Transaction: ${txHash}`);
-                console.log(txHash);
+                alert(`Token Minted Successfully! Transaction hash: ${txHash}`);
+                console.log(`Token Minted Successfully! Token Address: ${mintKeypair.publicKey.toBase58()}`);
             } else {
                 alert("Phantom wallet does not support transaction signing.");
                 throw new Error("Phantom wallet cannot sign transactions.");
             }
-
         } catch (error) {
             console.error("Minting Error:", error);
             alert("Minting failed! Check console for details.");
+            setIsLoading(false);
             return;
         }
 
@@ -98,6 +99,7 @@ const MintFunction = () => {
                 const signedAtaTransaction = await wallet.signTransaction(ataTransaction);
                 const ataTxHash = await connection.sendRawTransaction(signedAtaTransaction.serialize());
                 alert(`Associated Token Account Successfully Created! Transaction: ${ataTxHash}`);
+                console.log(`Associated Token Account address: ${associatedTokenAddress.toBase58()}`);
                 console.log(ataTxHash);
             }
 
@@ -118,14 +120,13 @@ const MintFunction = () => {
             const mintToTxHash = await connection.sendRawTransaction(signedMintToTransaction.serialize());
             console.log(`Tokens Minted! Tx: ${mintToTxHash}`);
             alert(`Tokens Minted Successfully! Transaction: ${mintToTxHash}`);
-
         } catch (error) {
             console.error("Associated token formation Error:", error);
             alert("Associated token formation failed! Check console for details.");
         }
+
+        setIsLoading(false);
     }
-
-
 
     return (
         <div className='form'>
@@ -139,7 +140,9 @@ const MintFunction = () => {
             <input type="number" name="decimals" placeholder="Decimals" value={formData.decimals} onChange={handleChange} />
             <input type="number" name="supply" placeholder="Supply" value={formData.supply} onChange={handleChange} />
             <input type="text" name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
-            <button className="mintButton" onClick={() => createMintTransaction()}>Create Mint</button>
+            <button className="mintButton" onClick={createMintTransaction} disabled={isLoading}>
+                {isLoading ? "Minting..." : "Create Mint"}
+            </button>
         </div>
     );
 };

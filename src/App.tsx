@@ -15,7 +15,7 @@ import MintFunction from './components/Mint';
 function App() {
   const network = WalletAdapterNetwork.Devnet;
    const endpoint ="https://solana-mainnet.g.alchemy.com/v2/yBzlkWFR7LyZlmSKMjCBgTJEYK9LIktp"
-  const wallets = useMemo(() => [new UnsafeBurnerWalletAdapter()], [network]);
+  const wallets = useMemo(() => [new UnsafeBurnerWalletAdapter()],[network]);
 
   return (
     <ConnectionProvider endpoint = {endpoint}>
