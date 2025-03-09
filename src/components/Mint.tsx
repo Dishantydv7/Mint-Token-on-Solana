@@ -2,6 +2,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import * as web3 from "@solana/web3.js";
 import * as token from "@solana/spl-token";
 import React, { useState } from "react";
+import './Mint.css'
 
 const MintFunction = () => {
     const wallet = useWallet();
@@ -15,6 +16,10 @@ const MintFunction = () => {
     });
     const [network, setNetwork] = useState("devnet");
     const [isLoading, setIsLoading] = useState(false);
+    const [tokenAddress, setTokenAddress] = useState("");
+    const [mintAddresses, setMintAddresses] = useState<string[]>([]);
+    const [showPopup, setShowPopup] = useState(false);
+    const connection = new web3.Connection(web3.clusterApiUrl("devnet"), "confirmed");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -24,6 +29,19 @@ const MintFunction = () => {
         }));
     };
 
+    async function getTokensFromAddress(walletAddress : string){
+        const pubKey = new web3.PublicKey(walletAddress);
+        const tokenAccounts = await connection.getParsedTokenAccountsByOwner(pubKey , {programId: token.TOKEN_PROGRAM_ID});
+
+        const tokens = tokenAccounts.value.map((account) => {
+            const info = account.account.data.parsed.info;
+            return info.mint;
+        });
+        setMintAddresses(tokens);
+        setShowPopup(true);
+
+    }
+
     async function createMintTransaction() {
         if (!wallet.publicKey) {
             alert("Please connect your wallet!");
@@ -32,7 +50,7 @@ const MintFunction = () => {
 
         setIsLoading(true);
         const mintKeypair = web3.Keypair.generate();
-        const connection = new web3.Connection(web3.clusterApiUrl("devnet"), "confirmed");
+    
 
         try {
             const lamports = await token.getMinimumBalanceForRentExemptMint(connection);
@@ -64,6 +82,7 @@ const MintFunction = () => {
                 const txHash = await connection.sendRawTransaction(signedTransaction.serialize());
                 alert(`Token Minted Successfully! Transaction hash: ${txHash}`);
                 console.log(`Token Minted Successfully! Token Address: ${mintKeypair.publicKey.toBase58()}`);
+                setTokenAddress(mintKeypair.publicKey.toBase58());
             } else {
                 alert("Phantom wallet does not support transaction signing.");
                 throw new Error("Phantom wallet cannot sign transactions.");
@@ -143,7 +162,24 @@ const MintFunction = () => {
             <button className="mintButton" onClick={createMintTransaction} disabled={isLoading}>
                 {isLoading ? "Minting..." : "Create Mint"}
             </button>
+        <button onClick={() => wallet.publicKey && getTokensFromAddress(wallet.publicKey.toBase58()).then(console.log)}>Get Tokens of your Account</button>
+            {tokenAddress && <p>Token Address: {tokenAddress}</p>}
+
+            {showPopup && (
+                <div className="popup">
+                    <div className="popup-content">
+                        <span className="close" onClick={() => setShowPopup(false)}>&times;</span>
+                        <h3>Your Token Mint Addresses</h3>
+                        <ul>
+                            {mintAddresses.map((mint, index) => (
+                                <li key={index}>{mint}</li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            )}
         </div>
+        
     );
 };
 

@@ -1,0 +1,140 @@
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Form Container */
+.form-container {
+    width: 380px;
+    padding: 20px;
+    background: #1f1f1f;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+}
+
+/* Input Fields */
+.form-container input, 
+.form-container select {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #2a2a2a;
+    color: #fff;
+    outline: none;
+    transition: 0.3s;
+    word-break: break-word; /* Prevents text overflow */
+    overflow-wrap: break-word; /* Ensures text wraps properly */
+}
+
+.form-container input::placeholder {
+    color: #888;
+}
+
+.form-container input:focus, 
+.form-container select:focus {
+    background: #333;
+    border: 1px solid #4caf50;
+}
+
+/* Buttons */
+.mintButton, .tokenButton {
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.mintButton {
+    background: linear-gradient(45deg, #4caf50, #388e3c);
+    color: white;
+}
+
+.mintButton:hover {
+    background: linear-gradient(45deg, #45a049, #2e7d32);
+}
+
+.tokenButton {
+    background: linear-gradient(45deg, #1976d2, #1565c0);
+    color: white;
+}
+
+.tokenButton:hover {
+    background: linear-gradient(45deg, #1565c0, #0d47a1);
+}
+
+/* Popup */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px; /* Increased width to fit long addresses */
+    background: #282828;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out;
+    overflow-wrap: break-word;
+    word-break: break-all;
+}
+
+.popup-content {
+    position: relative;
+}
+
+.popup h3 {
+    margin-bottom: 10px;
+    color: #4caf50;
+}
+
+.popup p {
+    font-size: 14px;
+    margin: 2%;
+    color: #ddd;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
+
+.close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #ff4444;
+    transition: 0.3s;
+}
+
+.close:hover {
+    color: #ff0000;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -55%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
